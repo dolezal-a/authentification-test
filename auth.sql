@@ -1,5 +1,8 @@
+/* Installation script for the Authentification-Test Database.
+ * Author:     Andreas Dolezal
+ * Date:       2020-06-07
+ */
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS usersSalt;
 
 CREATE TABLE users(
 	  userID INT UNSIGNED PRIMARY KEY AUTO_INCREMENT
@@ -8,12 +11,6 @@ CREATE TABLE users(
     , lastname VARCHAR(256) NOT NULL
     , email VARCHAR(256) NOT NULL
     , pass VARCHAR(256) NOT NULL
-);
-
-CREATE TABLE usersSalt(
-	  userID INT UNSIGNED PRIMARY KEY
-	, userSalt VARCHAR(256) NOT NULL
-    , userKey VARCHAR(256) NOT NULL
 );
 
 ALTER TABLE users AUTO_INCREMENT=1000;
