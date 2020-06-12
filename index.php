@@ -25,6 +25,7 @@
         return $connection;
     }
 
+
     // 1. Login
     if(isset($_POST['submit-login']))
     {
@@ -32,6 +33,15 @@
 
         $username = $_POST['username'] ?? null;
         $password = $_POST['password'] ?? null;
+
+        // If another user is loged in, log out the loged in user.
+        if ( isset( $_COOKIE[session_name()] ) )
+        {
+            setcookie( session_name(), '', time()-3600, '/');
+        }
+        session_regenerate_id(false);
+        session_unset();
+
 
         $sql = 'SELECT userID, username, firstname, lastname, pass FROM users WHERE username=?';
         $stmt = mysqli_stmt_init($connection);
@@ -86,6 +96,7 @@
         mysqli_stmt_close($stmt);
         mysqli_close($connection);
     }
+
 
     // 2. Signup
     if(isset($_POST['submit-signup']))
@@ -156,70 +167,24 @@
         mysqli_close($connection);
     }
 
-    // 3. Logout
-    if(isset($_POST['submit-logout']))
-    {
-        session_unset();
-        session_destroy();
-        header('Location: index.php');
-    }
 
     // Website
-?>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" >
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>PHP - Authentification Test</title>
-        <!-- <link rel="stylesheet" href="style.css"> -->
-        <style>
-            label{
-                display: inline-block;
-                width: 10rem;
-            }
-        </style>
-    </head>
-    <body>
-        <main>
-<?php
+    include_once('header.php');
+
     if(!isset($_GET['logedin']))
     {
-?>
-            <h2>LOGIN</h2>
-            <form action ="index.php" id="login" method="post">
-                <label for="username">User</label><input type="text" id="username" name="username"><br>
-                <label for="password">Password</label><input type="password" id="password" name="password"><br>
-                <button type="submit" name="submit-login">Login</button>
-            </form>
-            <hr>
-            <h2>SIGNUP</h2>
-            <form action="index.php" id="signup" method="post">
-                <label for="username">User</label><input type="text" id="username" name="username"><br>
-                <label for="firstName">First Name</label><input type="text" id="firstName" name="firstName"><br>
-                <label for="lastName">Last Name</label><input type="text" id="lastName" name="lastName"><br>
-                <label for="email">Email Address</label><input type="email" id="email" name="email"><br>
-                <label for="password">Password</label><input type="password" id="password" name="password"><br>
-                <label for="password-repeat">Repeat Password</label><input type="password" id="password-repeat" name="password-repeat"><br>
-                <button type="submit" name="submit-signup">Signup</button>
-            </form>
-<?php
+        include_once('home.php');
+        if(isset($_SESSION['userID']))
+        {
+            include_once('login-confirmed.php');
+        }
     }
     else
     {
         if(isset($_GET['logedin']) && $_GET['logedin'] == 'true')
         {
-?>
-            <p>You are loged in as: <?php echo $_SESSION['firstname'] . ' ' . $_SESSION['lastname']; ?></p>
-            <p>
-                <form action="index.php" id="logout" mehtod="post">
-                    <button type="submit" name="submit-logout">Logout</button>
-                </form>
-            </p>
-<?php
+            include_once('login-confirmed.php');
         }
     }
-?>
-        </main>
-    </body>
-</html>
+
+    include_once('footer.php');
